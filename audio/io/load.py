@@ -24,7 +24,3 @@ def load_wav(
     audio = audio.astype(dtype)
 
     return audio, sr
-
-if __name__ == "__main__":
-    audio, sr = load_wav("data/dataset-v1/inputs/test.wav")
-    print(f"Loaded audio with shape: {audio.shape}, Sample Rate: {sr}, Data Type: {audio.dtype}")
