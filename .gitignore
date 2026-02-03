@@ -210,3 +210,4 @@ __marimo__/
 tree.txt
 scripts/tree.py
 scripts/test-fundamental.py
+modules/base/dummy-module.py
