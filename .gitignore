@@ -209,4 +209,4 @@ __marimo__/
 
 tree.txt
 scripts/testing
-modules/base/dummy-module.py
+modules/base/dummy_module.py
