@@ -1,1 +1,3 @@
-# SIGNAL--FORM
+# SIGNAL//FORM
+
+SIGNAL//FORM is a local first, modular audio machine learning project focused on transforming flat mid bass sounds into richer, more usable bass while preserving pitch, identity, and low frequency stability. The system operates as a chain of small, specialised enhancement passes that analyse and reshape sound structure rather than generating new material, allowing each stage to target a specific aspect of timbre such as harmonic content or spectral balance. By treating sound as a form to be shaped and refined, SIGNAL//FORM is designed to evolve over time into a flexible enhancement engine where different processing chains can be combined to achieve distinct sonic goals.
