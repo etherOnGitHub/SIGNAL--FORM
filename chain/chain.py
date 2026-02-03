@@ -9,16 +9,16 @@ class ProcessingChain:
     def __init__(self, modules = None):
         self.modules = modules or []
 
-        def add(self, module):
+    def add(self, module):
             self.modules.append(module)
 
-        def insert(self, index, module):
+    def insert(self, index, module):
             self.modules.insert(index, module)
 
-        def remove(self, index):
+    def remove(self, index):
             self.modules.pop(index)
 
-        def initiate(self, audio, context):
-            for module in self.modules:
-                audio = module.process(audio, context)
-            return audio
+    def initiate(self, audio, context):
+        for module in self.modules:
+            audio = module.process(audio, context)
+        return audio
