@@ -1,3 +1,8 @@
+"""
+Audio context data structure for holding analysis results.
+This module defines the AudioContext class which encapsulates various audio analysis results
+"""
+
 from dataclasses import dataclass, field
 from typing import Optional, Dict, Any
 import numpy as np
