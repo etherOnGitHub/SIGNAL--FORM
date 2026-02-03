@@ -1,16 +1,20 @@
+from dataclasses import dataclass, field
+from typing import Optional, Dict, Any
+import numpy as np
 
+@dataclass
 class AudioContext:
+    sample_rate: int
+    f0: Optional[float] = None
+    loudness: Optional[float] = None
+    spectrogram: Optional[np.ndarray] = None
+    features: Dict[str, Any] = field(default_factory=dict)
 
-    def __init__(self):
-        self.f0 = None
-        self.sample_rate = None
-        self.loudness = None
-        self.spectrogram = None
-
-    def summary(self):
+    def summary(self) -> dict:
         return {
             "f0": self.f0,
             "sample_rate": self.sample_rate,
             "loudness": self.loudness,
             "spectrogram": self.spectrogram is not None,
+            "features": list(self.features.keys()),
         }

@@ -5,15 +5,17 @@ import librosa
 def estimate_f0(
         audio,
         sr,
-        fmin=30.0,
-        fmax=2000.0,
+        fmin=22,
+        fmax=None,
+        frame_length=4096,
 ):
     # Use librosa's pyin algorithm to estimate f0
     f0, voiced_flag, voiced_probs = librosa.pyin(
         audio,
         fmin=fmin,
-        fmax=fmax,
+        fmax=fmax or sr // 2,
         sr=sr,
+        frame_length=frame_length,
     )
 
     # Extract only voiced f0 values
