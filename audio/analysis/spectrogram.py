@@ -1,3 +1,8 @@
+"""
+Compute spectrograms for audio analysis.
+This module must never modify audio.
+"""
+
 import numpy as np
 import librosa
 

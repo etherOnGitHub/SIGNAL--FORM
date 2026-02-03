@@ -1,3 +1,8 @@
+"""
+Pitch analysis only.
+This module must never modify audio.
+"""
+
 import numpy as np
 import librosa 
 
