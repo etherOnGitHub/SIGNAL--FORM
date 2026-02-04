@@ -20,5 +20,6 @@ class ProcessingChain:
 
     def initiate(self, audio, context):
         for module in self.modules:
+            print(f"[CHAIN] running module: {module.__class__.__name__}")
             audio = module.process(audio, context)
         return audio

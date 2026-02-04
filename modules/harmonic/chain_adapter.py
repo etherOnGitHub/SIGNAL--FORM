@@ -38,17 +38,53 @@ class HarmonicToChainAdapter(BaseModule):
 
         if audio.dtype != np.float32:
             audio = audio.astype(np.float32, copy=False)
+
+        # --------------------------------
+        print(
+        "[ML ADAPTER] input audio:",
+        type(audio),
+        audio.shape,
+        audio.dtype
+        )
+        # --------------------------------
         # Remember original length for iSTFT
         length = audio.shape[0]
         # Convert numpy array to torch tensor
         x = torch.from_numpy(audio).to(self.device)
+        # --------------------------------
+        print(
+        "[ML ADAPTER] torch input audio:",
+        x.shape,
+        x.dtype,
+        x.device
+        )
+        # --------------------------------
         # Compute STFT (real and imaginary parts)
         X_ri = stft_ri(x, self.stft_cfg)
+        # --------------------------------
+        print(
+        "[ML ADAPTER] STFT (real & imag) shape:",
+        X_ri.shape,
+        X_ri.dtype
+        )
+        # --------------------------------
         # Add batch dimension
         X_ri = X_ri.unsqueeze(0)
+        # -------------------------------
+        print(
+        "[ML ADAPTER] STFT with batch shape:",
+        X_ri.shape
+        )
         # Forward pass through the model
         with torch.no_grad():
             Y_ri = self.model(X_ri)
+        # --------------------------------
+        print(
+        "[ML ADAPTER] model output shape:",
+        Y_ri.shape,
+        Y_ri.dtype
+        )
+        # --------------------------------
         # Validate output shape
         if Y_ri.shape != X_ri.shape:
             raise RuntimeError("Output shape from model does not match input shape")
@@ -56,9 +92,17 @@ class HarmonicToChainAdapter(BaseModule):
         if not torch.is_floating_point(Y_ri):
             raise RuntimeError("Model output must be floating point tensor")
         # Convert output back to numpy array
-        Y_ri = Y_ri.squeeze(0)  # Remove batch dimension
+        Y_ri = Y_ri.squeeze(0) 
         # Compute iSTFT to get time-domain signal
         y = istft_from_ri(Y_ri, self.stft_cfg, length=length)
         # Convert to numpy array
         out = y.detach().cpu().numpy().astype(np.float32, copy=False)
+        # --------------------------------
+        print(
+        "[ML ADAPTER] output audio:",
+        type(out),
+        out.shape,
+        out.dtype
+        )
+        # --------------------------------
         return out
