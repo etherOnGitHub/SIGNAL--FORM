@@ -15,11 +15,16 @@ import torch
 # Import STFT
 @dataclass(frozen=True)
 class STFTConfig:
+    # bin count
     n_fft: int = 2048
+    # length between frames
     hop_length: int = 256
+    # window length (window = size of each frame)
     win_length: int | None = None
-    window: str = "hann"
+    window: str = "hann" # type of window function change later
+    # whether to pad the input on both sides
     center: bool = True
+    # padding mode
     pad_mode: str = "reflect"
 
 # Helper to create window tensor
@@ -44,7 +49,7 @@ def stft_complex(
     audio: torch.Tensor,
     cfg: STFTConfig
 ) -> torch.Tensor:
-    squeeze_back = False
+    # Check input dimensions
     if audio.ndim == 1:
         audio_in = audio.unsqueeze(0)
         squeeze_back = True
@@ -57,7 +62,7 @@ def stft_complex(
     device = audio_in.device
     dtype = audio_in.dtype
     window = _make_window(cfg, device, dtype)
-
+    # Compute STFT
     X = torch.stft(
         audio_in,
         n_fft=cfg.n_fft,
@@ -84,25 +89,30 @@ def stft_ri(
     cfg: STFTConfig
 ) -> torch.Tensor:
     X = stft_complex(audio, cfg)
-
+    # Separate real and imaginary parts
     if X.ndim == 2:
         return torch.stack((X.real, X.imag), dim=0)
     else:
         return torch.stack((X.real, X.imag),dim=1)
     
+"""
+Compute the inverse Short-Time Fourier Transform (iSTFT) from complex STFT representation.
+This reconstructs the time-domain audio signal from its frequency-domain representation.
+"""
 @torch.no_grad()
 def istft_from_complex(
     X: torch.Tensor,
     cfg: STFTConfig,
-    length: int | None = None
+    length: int | None = None # desired output length
 ) -> torch.Tensor:
+    # Check input type
     if X.dtype not in (torch.complex64, torch.complex128):
         raise ValueError("Input tensor must be of complex nature")
 
     device = X.device
-    float_dtype = torch.float32 if X.dtype == torch.complex64 else torch.float64
+    float_dtype = torch.float32 if X.dtype == torch.complex64 else torch.float64 # match precision
     window = _make_window(cfg, device, float_dtype)
-
+    # Compute iSTFT
     y = torch.istft(
         X,
         n_fft=cfg.n_fft,
@@ -115,19 +125,28 @@ def istft_from_complex(
         length=length,
     )
     return y
-
+"""
+Compute the inverse Short-Time Fourier Transform (iSTFT) from real-imaginary STFT representation.
+This reconstructs the time-domain audio signal from its frequency-domain representation.
+Supports both single and batch inputs.
+"""
 @torch.no_grad()
 def istft_from_ri(
     X_ri: torch.Tensor,
     cfg: STFTConfig,
     length: int | None = None
 ) -> torch.Tensor:
+    # Check input dimensions
     if X_ri.ndim == 3:
+        # Single input: (2, freq_bins, time_frames)
         real, imag = X_ri[0], X_ri[1]
+        # Combine real and imaginary parts into complex tensor
         Xc = torch.complex(real, imag)
         return istft_from_complex(Xc, cfg, length=length)
     if X_ri.ndim == 4:
+        # Batch input: (batch, 2, freq_bins, time_frames)
         real, imag = X_ri[:,0], X_ri[:,1]
+        # Combine real and imaginary parts into complex tensor
         Xc = torch.complex(real, imag)
         return istft_from_complex(Xc, cfg, length=length)
     raise ValueError("Input tensor must be 3D or 4D for real-imaginary representation")
