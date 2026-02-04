@@ -52,6 +52,9 @@ class HarmonicToChainAdapter(BaseModule):
         # Validate output shape
         if Y_ri.shape != X_ri.shape:
             raise RuntimeError("Output shape from model does not match input shape")
+        # Check model is floating point tensor
+        if not torch.is_floating_point(Y_ri):
+            raise RuntimeError("Model output must be floating point tensor")
         # Convert output back to numpy array
         Y_ri = Y_ri.squeeze(0)  # Remove batch dimension
         # Compute iSTFT to get time-domain signal
