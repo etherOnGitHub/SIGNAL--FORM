@@ -13,7 +13,7 @@ DSP CHAIN -- Numpy  - (T,)
 HarmonicReorganiser -- Torch - (B, 2, F, T)
 """
 
-class HarmonicToChainAdapter(BaseModule):
+class TorchBoundaryModule(BaseModule):
     def __init__(
             self,
             model: torch.nn.Module,
@@ -32,6 +32,9 @@ class HarmonicToChainAdapter(BaseModule):
         # Validate input
         if not isinstance(audio, np.ndarray):
             raise TypeError("Input audio must be a numpy array")
+        
+        if context is None:
+            raise ValueError("Context cannot be None my brain needs it to process the audio.")
         
         if audio.ndim != 1:
             raise ValueError("Input audio numpy array must be 1D")
