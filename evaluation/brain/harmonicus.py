@@ -27,13 +27,21 @@ class Harmonicus:
             self.model.to(self.device)
 
     def forward(self, x_ri: torch.Tensor, context) -> torch.Tensor:
+        print(
+            "[HARMONICUS] forward() | "
+            f"mode={self.mode.name} "
+            f"model={'yes' if self.model else 'no'} "
+            f"input shape={x_ri.shape}"
+        )
         if context is None:
             raise ValueError("Context cannot be None Harmonicus needs it to process the audio.")
         # Check input shape
         if self.mode is BrainMode.BYPASS or self.model is None:
+            print("[HARMONICUS] BYPASS → returning input unchanged")
             return x_ri
         # Validate input shape
         if self.mode is BrainMode.NORMAL:
+            print("[HARMONICUS] NORMAL → Processing with model in evaluation mode")
             # Ensure model is in evaluation mode and disable gradient computation.
             self.model.eval()
             with torch.no_grad():
@@ -41,6 +49,7 @@ class Harmonicus:
             return self._validate_output(x_ri, y)
         # In training mode, we want to allow gradients to flow through the model for backpropagation.
         if self.mode is BrainMode.TRAINING:
+            print("[HARMONICUS] TRAINING → Processing with model in training mode (grad enabled)")
             self.model.train()
             y = self.model(x_ri)
             return self._validate_output(x_ri, y)

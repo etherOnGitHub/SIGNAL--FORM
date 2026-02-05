@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Tuple
+from .windows import WindowType
 
 import torch
 
@@ -21,16 +22,18 @@ class STFTConfig:
     hop_length: int = 256
     # window length (window = size of each frame)
     win_length: int | None = None
-    window: str = "hann" # type of window function change later
+    window: WindowType = WindowType.HANN # type of window
     # whether to pad the input on both sides
     center: bool = True
     # padding mode
     pad_mode: str = "reflect"
 
 # Helper to create window tensor
+# NOTE: window recreation is intentional for now
+# Can be cached per (cfg, device, dtype) later
 def _make_window(cfg: STFTConfig, device: torch.device, dtype: torch.dtype) -> torch.Tensor:
     win_length = cfg.win_length or cfg.n_fft
-    if cfg.window == "hann":
+    if cfg.window is WindowType.HANN:
         return torch.hann_window(win_length, periodic=True, device=device, dtype=dtype)
     else:
         raise ValueError(f"Unsupported window type: {cfg.window}")
@@ -82,6 +85,9 @@ def stft_complex(
 """
 Compute the STFT and return real and imaginary parts separately.
 This is useful for models that require separate channels for real and imaginary components.
+returns:
+    - (2, F(freq_bins), T(time_frames)) for single input
+    - (B (batch), 2, F(freq_bins), T(time_frames)) for batch input
 """
 @torch.no_grad()
 def stft_ri(
