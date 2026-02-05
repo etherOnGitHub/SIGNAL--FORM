@@ -1,5 +1,5 @@
 from evaluation.brain.modes import BrainMode
-from evaluation.brain.models.harmonicus import Harmonicus
+from evaluation.brain.harmonicus import Harmonicus
 
 class IdentityHarmonicus(Harmonicus):
         def __init__(self):
