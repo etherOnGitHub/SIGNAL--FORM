@@ -26,13 +26,13 @@ class MaskBrain(HarmonicusBase):
         )
 
         # Initialize the last layer to produce small values, so the initial mask is close to 1
-        def forward(
-            self, 
-            x_ri: Tensor, 
-            context: object | None = None
-        ) -> Tensor:
-            # Predict a mask from the input
-            m = self.net(x_ri)
-            # Use a non-linear activation to ensure the mask is positive and close to 1
-            m = 1.0 + torch.tanh(m)
-            return x_ri * m
+    def forward(
+        self, 
+        x_ri: Tensor, 
+        context: object | None = None
+    ) -> Tensor:
+        # Predict a mask from the input
+        m = self.net(x_ri)
+        # Use a non-linear activation to ensure the mask is positive and close to 1
+        m = 1.0 + torch.tanh(m)
+        return x_ri * m
