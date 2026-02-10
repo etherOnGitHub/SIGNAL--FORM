@@ -13,6 +13,7 @@ def estimate_f0(
         fmin=22,
         fmax=None,
         frame_length=4096,
+        hop_length=256,
 ):
     # Use librosa's pyin algorithm to estimate f0
     f0, voiced_flag, voiced_probs = librosa.pyin(
@@ -21,6 +22,7 @@ def estimate_f0(
         fmax=fmax or sr // 2,
         sr=sr,
         frame_length=frame_length,
+        hop_length=hop_length,
     )
 
     # Extract only voiced f0 values
@@ -31,5 +33,9 @@ def estimate_f0(
         return None
     
 
-    # Return median F0 of voiced segments (to account for any detune)
-    return float(np.median(f0_voiced))
+    # Return the f0 contour and voiced flags
+    return {
+        "f0": f0,
+        "voiced_flag": voiced_flag,
+        "voiced_probs": voiced_probs,
+    }

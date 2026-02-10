@@ -34,5 +34,6 @@ class MaskBrain(HarmonicusBase):
         # Predict a mask from the input
         m = self.net(x_ri)
         # Use a non-linear activation to ensure the mask is positive and close to 1
-        m = 1.0 + torch.tanh(m)
+        m = 1.0 + 2 * torch.exp(torch.tanh(m))
+        m = torch.clamp(m, 0.5, 5.0) # limit the range of the mask to prevent extreme values
         return x_ri * m

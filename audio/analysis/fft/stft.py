@@ -89,6 +89,7 @@ returns:
     - (2, F(freq_bins), T(time_frames)) for single input
     - (B (batch), 2, F(freq_bins), T(time_frames)) for batch input
 """
+# gradient = when we want to use the STFT in a model and backpropagate through it, we need to ensure that the operations are differentiable.
 @torch.no_grad()
 def stft_ri(
     audio: torch.Tensor,
