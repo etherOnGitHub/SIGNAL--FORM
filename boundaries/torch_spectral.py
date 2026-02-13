@@ -4,6 +4,7 @@ import torch
 from modules.base.module import BaseModule
 from audio.analysis.fft.stft import STFTConfig, stft_ri, istft_from_ri
 from evaluation.brain.harmonicus import Harmonicus
+from audio.analysis.fft.add_harmonics import generate_harmonics
 
 class TorchBoundaryModule(BaseModule):
     def __init__(
@@ -47,6 +48,20 @@ class TorchBoundaryModule(BaseModule):
 
         # Pass to Harmonicus the Wise for descision making
         Y_ri = self.brain.forward(X_ri, context)
+
+        # sprinkle some glitter
+        f0_data = context.f0_track
+        if f0_data is not None:
+            print("[ML BOUNDARY] Adding harmonics based on F0 track")
+            Y_ri = generate_harmonics(
+                Y_ri, 
+                f0_track=torch.from_numpy(f0_data["f0"]).to(self.device),
+                voiced=torch.from_numpy(f0_data["voiced_flag"]).to(self.device),
+                confidence=torch.from_numpy(f0_data["voiced_probs"]).to(self.device),
+                sr=context.sample_rate,
+                n_fft=self.stft_cfg.n_fft,
+            )
+        
 
         print(
             "[ML BOUNDARY] ← exiting Harmonicus | "

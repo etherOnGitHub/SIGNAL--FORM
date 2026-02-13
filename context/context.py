@@ -13,6 +13,7 @@ class AudioContext:
     f0: Optional[float] = None
     loudness: Optional[float] = None
     spectrogram: Optional[np.ndarray] = None
+    f0_track: Optional[Dict[str, np.ndarray]] = None
     features: Dict[str, Any] = field(default_factory=dict)
 
     def summary(self) -> dict:
